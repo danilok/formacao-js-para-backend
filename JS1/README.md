@@ -94,4 +94,17 @@ Exibe as chamadas executadas até atingir o ponto do código que gerou o erro. A
 
 ## 4 Operadores
 
+- `==`
+- `===`
+- `||`
+- `&&`
+- `!=`
+- `!==`
+- Operador ternário: `(condicao) ? <true> : <false>`
+- Outros operadores: [Documentação oficial](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Guide/Expressions_and_operators)
+
+### Template string
+Uso com acento grave para delimitar a string e para utilizar variáveis ou operações, use a notação `${}`.
+
+
 ## 5 Funções

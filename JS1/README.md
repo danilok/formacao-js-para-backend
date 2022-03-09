@@ -108,3 +108,22 @@ Uso com acento grave para delimitar a string e para utilizar variáveis ou opera
 
 
 ## 5 Funções
+
+### Declaração da função
+Usa-se keyword `function nome-da-funcao(<lista de parametros>) { // codigo }`
+```js
+function soma(numero1, numero2) {
+  return numero1 + numer2
+} 
+```
+
+### Chamada da função
+`nome-da-funcao(<valores do parametros>)`
+```js
+soma(3, 6) //9
+```
+
+### Parâmetros
+- ordem é relevante
+- existem apenas dentro do escopo da função
+- podem ser valores primitivos, objetos ou até mesmo outras funções

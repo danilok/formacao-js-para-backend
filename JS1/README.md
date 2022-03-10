@@ -110,7 +110,7 @@ Uso com acento grave para delimitar a string e para utilizar variáveis ou opera
 ## 5 Funções
 
 ### Declaração da função
-Usa-se keyword `function nome-da-funcao(<lista de parametros>) { // codigo }`
+Usa-se a *keyword* `function nome-da-funcao(<lista de parametros>) { // codigo }`
 ```js
 function soma(numero1, numero2) {
   return numero1 + numer2
@@ -127,3 +127,38 @@ soma(3, 6) //9
 - ordem é relevante
 - existem apenas dentro do escopo da função
 - podem ser valores primitivos, objetos ou até mesmo outras funções
+
+### Argumentos
+- valores passados nos parâmetros de uma função
+Ex: parâmetro `numero1` da função `soma`, ao ser executada no exemplo de chamada da função acima, o argumento relacionado ao parâmetro `numero1`é o valor `3`, e `6` seria o argumento do parâmetro `numero2`.
+
+### Expressões de função
+A declaração anônima é atribuída à uma variável e sua chamada deve ser feita usando o nome da variável.
+```js
+const divide = function (num1, num2) { return num1 / num2 }
+console.log(divide(4, 2))
+```
+Um ponto importante é que diferentemente das funções declaradas, expressões de função não sofrem *hoisting*.
+Portanto podemos chamá-las apenas depois de sua declaração.
+
+### Arrow Function
+As arrow functions também são funções anônimas e após os parâmetros, usamos o operador `=>` e em seguida passamos o código que a função executará.
+Em questão de *hoisting*, se comportam como expressões de função, ou seja, só podemos usar uma arrow function após sua definição.
+Algumas características para definir uma arrow function:
+- quando o código a ser executado é apenas uma linha, não é necessário usar `{}`
+- quando o código a ser executado for apenas uma instrução e for necessário retornar seu valor, a *keyword* `return` pode ser suprimido
+- não é necessário usar a *keyword* `function`, usa-se o operador `=>`
+
+Exemplos de arrow functions:
+```js
+const saudacao = () => `olá`
+const apresentar = (nome) => `olá, me chamo ${nome}`
+const subtrai = (num1, num2) => num1 - num2
+const divide = (num1, num2) => {
+  if (num === 0) {
+    console.error('Não é possível fazer essa divisão')
+    return
+  }
+  return num1 / num2
+}
+```

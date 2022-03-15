@@ -41,6 +41,20 @@ Através da propriedade `length` é possível saber a quantidade de elementos de
 - Remover da última posição: `Array.pop()`
 
 ## 2 Alterando arrays
+
+### Dividir arrays
+Método `slice`, não altera o array original.
+
+### Adicionar arrays
+Método `splice`, altera o array original.
+
+### Concatenar arrays
+Método `concat`, não altera os arrays originais.
+
+### Lista com 2 dimensões
+Declarar lista dentro de listas, também podem ser chamadas de matrizes. Para acessar uma posição de uma lista dentro de outra listas, também se utiliza os `[]`.
+Ex: imagem[255][231] = imagem[x][y]
+
 ## 3 Laços de repetição
 ## 4 Métodos callback
 ## 5 Mais métodos de array

@@ -35,3 +35,11 @@ notas.forEach(somaNotas);
 const media = somaDasNotas / notas.length;
 
 console.log(`A média das notas é ${media}`);
+
+function callback() { console.log('hi') }
+
+function chamaCallback(cb) {
+  cb()
+}
+
+chamaCallback(callback);

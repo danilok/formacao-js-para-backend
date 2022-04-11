@@ -4,7 +4,7 @@
  * um novo dependente ao objeto Cliente.
  */
 
- const cliente = {
+const cliente = {
   nome: 'Danilo',
   idade: 35,
   cpf: '42424256209',

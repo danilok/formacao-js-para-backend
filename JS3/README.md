@@ -164,3 +164,211 @@ O método `Object.create()` cria um novo objeto utilizando como protótipo o obj
 Você pode ver mais exemplos desse método na [documentação do MDN](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Reference/Global_Objects/Object/create).
 
 Nas próximas aulas veremos também outra forma de criar objetos, utilizando `funções construtoras`.
+
+## 3 Percorrendo objetos
+
+### **For...in**
+
+Usar o comando `for...in` é útil quando queremos percorrer todas as chaves de um objeto.
+Exemplo:
+```js
+const obj = {
+  chave1: 'nome',
+  chave2: 1,
+  chave3: true
+}
+
+for (let chave in obj) {
+  console.log(chave)
+}
+// chave1
+// chave2
+// chave3
+```
+
+### **Métodos de objeto**
+
+- `Object.keys()`:
+  - Retorna um array com todas as chaves do objeto
+- `Object.values()`
+  - Retorna um array com todas os valores do objeto
+- `Object.entries()`
+  - Retorna um array de arrays formados por dois elementos, sendo o primeiro a chave e o segundo os valores.
+
+### **Sintaxe de espalhamento**
+
+O operador `...` chamado de `spread operator` serve para espalhar o conteúdo de um objeto.
+
+Este operador copia as propriedades de objetos para outros, “espalhando” os conteúdos. Vamos ver mais alguns exemplos:
+```js
+const fichaGuerreiro = {
+ nome: "Aragorn",
+ classe: "guerreiro"
+}
+
+const equipoGuerreiro = {
+ espada: "Andúril",
+ capa: "capa élfica +2"
+}
+```
+Vamos agora tentar juntar esses dois objetos em apenas um, que vamos chamar de personagens. Em um primeiro teste, vamos criar um novo objeto literal com { } e passar para este objeto as variáveis de cada personagem:
+```js
+const guerreiro = { fichaGuerreiro, equipoGuerreiro }
+console.log(guerreiro)
+```
+O resultado no console não é exatamente o que queremos, pois os objetos ainda estão separados; o nome de cada variável agora é uma chave e o valor da chave é cada um dos objetos:
+```js
+{
+  fichaGuerreiro: { nome: 'Aragorn', classe: 'guerreiro' },
+  equipoGuerreiro: { espada: 'Andúril', capa: 'capa élfica +2' }
+}
+```
+Aqui entramos com o spread operator, adicionando a sintaxe de três pontos (reticências) antes do nome de cada objeto literal, com cada objeto separado por vírgula:
+```js
+const guerreiro = { ...fichaGuerreiro, ...equipoGuerreiro }
+console.log(guerreiro)
+```
+O console agora mostra o resultado esperado:
+```js
+{
+ nome: 'Aragorn',
+ classe: 'guerreiro',
+ espada: 'Andúril',
+ capa: 'capa élfica +2'
+}
+```
+Importante! Vale notar que, caso a sintaxe de espalhamento seja usada em objetos que tenham chaves/propriedades com o mesmo nome, o JavaScript vai sobrescrever o valor destas propriedades à medida que encontra novos valores com o mesmo nome de chave. Por exemplo:
+```js
+const mago = {
+ nome: "Gandalf",
+ classe: "mago"
+}
+ const guerreiro = {
+ nome: "Aragorn",
+ classe: "guerreiro"
+}
+
+const ranger = {
+ nome: "Legolas",
+ classe: "ranger"
+}
+```
+Os três objetos acima têm as mesmas propriedades. Vamos ver o que acontece se tentarmos “espalhar” os dados em um único objeto com o spread operator:
+```js
+const personagens = { ...mago, ...guerreiro, ...ranger }
+console.log(personagens)
+```
+O resultado não será bem o que esperamos:
+```js
+{ nome: 'Legolas', classe: 'ranger' }
+```
+O JavaScript sobrescreveu as chaves com o mesmo nome a cada ocorrência, assim o resultado final foi somente o último objeto declarado dentro do objeto personagens.
+
+Apesar de prático, o uso da sintaxe de espalhamento pode gerar bastante processamento, então deve ser usado com cuidado em caso de loops ou funções recursivas.
+
+Também é possível utilizar esta sintaxe com arrays. Você pode conferir mais exemplos neste [Alura+](https://www.youtube.com/watch?v=f8a-qwKC5yk).
+
+### **JSON**
+
+Quando começamos a estudar programação back-end, um termo que sempre aparece logo de cara é JSON. Mas o que é isso?
+
+JSON é um acrônimo de JavaScript Object Notation ou “notação de objeto JavaScript”. Como o próprio nome já sugere, JSON é um formato que utiliza a sintaxe de objetos e arrays do JavaScript. É muito versátil e se tornou a forma mais comum de estrutura para transferência de dados entre cliente/servidor, e tem sido utilizado mesmo em programas que não utilizam JavaScript. A estrutura também é mais fácil de compreender, comparada com outro formato de transferência de dados, o XML:
+
+Formato JSON:
+```json
+ {
+   "id": 59,
+   "titulo": "ECMAScript 6",
+   "autor": "Diego Martins de Pinho",
+   "categoria": "programação"
+ }
+```
+Formato XML:
+```xml
+<livro id="59">
+ <titulo>ECMAScript 6</titulo>
+ <autor>Diego Martins de Pinho</autor>
+ <categoria>programação</categoria>
+</livro>
+```
+Você pode conferir mais sobre o XML aqui.
+
+À primeira vista, um objeto JSON não parece muito diferente de um objeto literal em JavaScript:
+```json
+{
+ "editora": "Casa do Código",
+ "catalogo": [
+ {
+   "id": 50,
+   "titulo": "Primeiros Passos com NodeJS",
+   "autor": "João Rubens",
+   "categoria": "programação",
+   "versoes": ["ebook", "impresso"]
+ },
+ {
+   "id": 59,
+   "titulo": "ECMAScript 6",
+   "autor": "Diego Martins de Pinho",
+   "categoria": "programação",
+   "versoes": ["ebook"]
+ },
+ {
+ "id": 39,
+ "titulo": "Orientação a Objetos",
+ "autor": "Thiago Leite",
+ "categoria": "programação",
+ "versoes": ["ebook", "impresso"]
+ }
+]}
+```
+O código acima mostra um JSON com dois conjuntos de propriedade/valor: um tem valor de string (editora) e catálogo é um array de objetos, cada um representando um livro.
+
+As diferenças de sintaxe entre JSON e um objeto JavaScript são:
+
+- No JSON, as chaves sempre devem estar entre aspas duplas ” ”, no formato string. Já no objeto JavaScript, as aspas não são obrigatórias;
+- O JSON aceita como valores apenas dados primitivos (string, number para números finitos, true, false e null), objetos e arrays. Não é possível declarar funções/métodos;
+- Não são permitidas vírgulas após o último conjunto de chave/valor do objeto.
+
+**JSON** é um formato criado para transferência de dados, sendo assim é necessário convertê-lo para um objeto JavaScript para que os dados possam ser utilizados em um programa. Para isso, existem dois métodos nativos:
+
+- JSON.parse(): converte JSON para um objeto JavaScript;
+- JSON.stringify(): converte um objeto JavaScript para o formato JSON.
+
+Por exemplo, podemos converter um objeto de livro para o JSON:
+
+```js
+const jsonLivro = JSON.stringify({
+ id: 50,
+ titulo: "Primeiros Passos com NodeJS",
+ autor: "João Rubens",
+ categoria: "programação",
+ versoes: ["ebook", "impresso"]
+})
+
+console.log(jsonLivro)
+```
+O resultado é um string JSON:
+```
+{"id":50,"titulo":"Primeiros Passos com NodeJS","autor":"João Rubens","categoria":"programação","versoes":["ebook","impresso"]}
+```
+Para fazer o processo inverso:
+```js
+const objLivro = JSON.parse(jsonLivro)
+console.log(objLivro)
+```
+O resultado é um objeto JavaScript:
+```js
+{
+ id: 50,
+ titulo: 'Primeiros Passos com NodeJS',
+ autor: 'João Rubens',
+ categoria: 'programação',
+ versoes: [ 'ebook', 'impresso' ]
+}
+```
+
+```
+O processo de converter estruturas de dados em sequências de bytes ou caracteres. como no caso do JSON, é chamado de serialização (ou marshaling em algumas linguagens como Go).
+```
+
+O JSON é uma ferramenta imprescindível para o desenvolvimento web. Agora que você já sabe o que é e também sabe os métodos para acessar e percorrer objetos, já pode começar a praticar.

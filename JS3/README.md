@@ -82,3 +82,85 @@ Esta operação de remoção retorna um booleano. O retorno é `true` passando u
 A deleção de uma propriedade remove tanto a chave quanto o seu valor.
 
 Caso tente ver o valor de uma chave após ela ser removido, o valor será `undefined`.
+
+## 2 Manipulação de objetos
+
+### **Tipos de dados e valores**
+
+Para um propriedade de um objeto, é possível usar diversos tipos de valores, tanto valores primitivos quanto estruturas de dados, como o `Array`.
+
+### **Objeto em objetos**
+
+Um objeto pode ter em uma de suas propriedades, um outro objeto. Este é um cenário bem comum em Javascript.
+
+### **Listas de objetos**
+
+Podemos combinar `Array` com objetos como valor de uma propriedade. Nesse caso, pode usar os métodos de `Array` para manipular as informações contidas nessa propriedade, como `filter`, `push`, `pop`.
+
+### **Funções**
+
+O objeto não precisa ser uma estrutura estática, ele pode ter informações geradas dinamicamente através de funções associadas a alguma propriedade. Geralmente no paradigma de orientação a objetos, essas funções são chamadas de `métodos`.
+
+### **Objeto literal e referência**
+
+Vimos anteriormente como é a estrutura de um objeto, com seus pares de chave e valor:
+
+```js
+const objPersonagem = {
+ nome: "Gandalf",
+ classe: "mago",
+ nivel: "20"
+}
+```
+
+O exemplo acima, assim como o que estamos criando durante esta aula, é o de um objeto literal.
+
+Um objeto literal é um objeto criado com a notação literal, ou seja: uma lista de chave e valores dentro de chaves `{ }`, que atribuímos a uma variável para que o valor possa ser acessado depois. Exatamente como no exemplo acima.
+
+Objetos literais funcionam bem quando queremos ter um objeto único, com seus próprios dados. Isso porque um objeto literal sempre aponta para um mesmo local na memória, mesmo se você criar cópias dele. Vejamos o código a seguir:
+
+```js
+const objPersonagem = {
+ nome: "Gandalf",
+ classe: "mago",
+ nivel: "20"
+}
+
+const objPersonagem2 = objPersonagem
+```
+Se alterarmos apenas o objPersonagem2, o resultado é:
+```js
+const objPersonagem2 = objPersonagem
+objPersonagem2.nome = "Gandalf, o Cinzento"
+
+console.log(objPersonagem.nome) //Gandalf, o Cinzento
+console.log(objPersonagem2.nome) //Gandalf, o Cinzento
+```
+A variável objPersonagem2 não fez uma cópia do objeto original, apenas serviu como referência para o objeto original objPersonagem. Assim, qualquer alteração em qualquer um dos objetos altera ambos. Isso porque o JavaScript, quando trabalha com objetos, acessa os valores deles fazendo referência ao original. mas não cria uma cópia. Já o acesso por cópia funciona com tipos primitivos (string, number, booleano, null, symbol):
+```js
+let num = 50
+let num2 = num
+
+num2 = 100
+console.log(num) //50
+console.log(num2) //100C
+```
+Como podemos contornar esse comportamento quando criamos objetos? Além de utilizar a notação literal, objetos também podem ser criados através do método `Object.create()`:
+```js
+const objPersonagem = {
+ nome: "Gandalf",
+ classe: "mago",
+ nivel: "20"
+}
+
+const objPersonagem2 = Object.create(objPersonagem)
+objPersonagem2.nome = "Gandalf, o Cinzento"
+
+console.log(objPersonagem.nome) //Gandalf
+console.log(objPersonagem2.nome) //Gandalf, o Cinzento
+```
+O método `Object.create()` cria um novo objeto utilizando como protótipo o objeto passado via parâmetro. Dessa forma, `objPersonagem2` é uma instância diferente de `objPersonagem` e pode ser trabalhada de forma independente.
+
+Você pode ver mais exemplos desse método na [documentação do MDN](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Reference/Global_Objects/Object/create).
+
+Nas próximas aulas veremos também outra forma de criar objetos, utilizando `funções construtoras`.

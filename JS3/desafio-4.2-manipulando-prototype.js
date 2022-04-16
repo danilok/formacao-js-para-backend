@@ -1,7 +1,7 @@
 /**
  * DESAFIO: Cliente poupança
  * Aproveitar o cliente que já existe e criar a partir dele
- * um novo tipo de cliente para para contas poupança.
+ * um novo tipo de cliente para contas poupança.
  */
 
 // função construtora de Cliente

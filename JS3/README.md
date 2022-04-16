@@ -272,7 +272,7 @@ Também é possível utilizar esta sintaxe com arrays. Você pode conferir mais 
 
 Quando começamos a estudar programação back-end, um termo que sempre aparece logo de cara é JSON. Mas o que é isso?
 
-JSON é um acrônimo de JavaScript Object Notation ou “notação de objeto JavaScript”. Como o próprio nome já sugere, JSON é um formato que utiliza a sintaxe de objetos e arrays do JavaScript. É muito versátil e se tornou a forma mais comum de estrutura para transferência de dados entre cliente/servidor, e tem sido utilizado mesmo em programas que não utilizam JavaScript. A estrutura também é mais fácil de compreender, comparada com outro formato de transferência de dados, o XML:
+JSON é um acrônimo de `JavaScript Object Notation` ou “notação de objeto JavaScript”. Como o próprio nome já sugere, JSON é um formato que utiliza a sintaxe de objetos e arrays do JavaScript. É muito versátil e se tornou a forma mais comum de estrutura para transferência de dados entre cliente/servidor, e tem sido utilizado mesmo em programas que não utilizam JavaScript. A estrutura também é mais fácil de compreender, comparada com outro formato de transferência de dados, o XML:
 
 Formato JSON:
 ```json
@@ -325,14 +325,14 @@ O código acima mostra um JSON com dois conjuntos de propriedade/valor: um tem v
 
 As diferenças de sintaxe entre JSON e um objeto JavaScript são:
 
-- No JSON, as chaves sempre devem estar entre aspas duplas ” ”, no formato string. Já no objeto JavaScript, as aspas não são obrigatórias;
+- No JSON, as chaves sempre devem estar entre aspas duplas `” ”`, no formato string. Já no objeto JavaScript, as aspas não são obrigatórias;
 - O JSON aceita como valores apenas dados primitivos (string, number para números finitos, true, false e null), objetos e arrays. Não é possível declarar funções/métodos;
 - Não são permitidas vírgulas após o último conjunto de chave/valor do objeto.
 
 **JSON** é um formato criado para transferência de dados, sendo assim é necessário convertê-lo para um objeto JavaScript para que os dados possam ser utilizados em um programa. Para isso, existem dois métodos nativos:
 
-- JSON.parse(): converte JSON para um objeto JavaScript;
-- JSON.stringify(): converte um objeto JavaScript para o formato JSON.
+- `JSON.parse()`: converte JSON para um objeto JavaScript;
+- `JSON.stringify()`: converte um objeto JavaScript para o formato JSON.
 
 Por exemplo, podemos converter um objeto de livro para o JSON:
 
@@ -424,10 +424,10 @@ Vimos que quando um objeto JavaScript é criado ele tem propriedades particulare
 Além do nome e do valor, cada propriedade tem também três atributos:
 
 - Writable: Define se a propriedade pode ser adicionada a (ou escrita em) um objeto;
-- Enumerable: Define se a propriedade é retornada, por exemplo, em um loop for...in ou utilizando Object.keys() / Object.values() / Object.entries(). Ou seja, se a propriedade é enumerável;
+- Enumerable: Define se a propriedade é retornada, por exemplo, em um loop for...in ou utilizando `Object.keys()` / `Object.values()` / `Object.entries()`. Ou seja, se a propriedade é enumerável;
 - Configurable: Especifica se a propriedade pode ser modificada ou deletada. Ou seja, se é configurável.
 
-Por definição, todas as propriedades de um objeto criadas durante o desenvolvimento têm estes três atributos como true. Já a maior parte das propriedades herdadas do protótipo têm estes atributos como false e não podem ser enumeradas, adicionadas ou alteradas.
+Por definição, todas as propriedades de um objeto criadas durante o desenvolvimento têm estes três atributos como `true`. Já a maior parte das propriedades herdadas do protótipo têm estes atributos como false e não podem ser enumeradas, adicionadas ou alteradas.
 
 ```
 O JavaScript utiliza o termo own property (propriedade própria) para se referir às propriedades que pertencem ao objeto (como os exemplos nome, cpf e email) e que não são herdadas do protótipo.
@@ -448,7 +448,7 @@ const catalogo = {
  }
 ]}
 ```
-Usando o método Object.getOwnPropertyDescriptor() para descrever os atributos da propriedade editora, teremos:
+Usando o método `Object.getOwnPropertyDescriptor()` para descrever os atributos da propriedade editora, teremos:
 ```js
 console.log(Object.getOwnPropertyDescriptor(catalogo, "editora"))
 ```
@@ -470,3 +470,233 @@ Objetos criados de forma literal (const obj = {a: 1}) utilizam Object.prototype 
 ```
 
 Protótipos e herança são temas vastos em JavaScript. A partir desta introdução, você pode praticar e se aprofundar no tema.
+
+## 5 Orientação a Objetos
+
+### **Conceito de OO**
+
+Orientação a objetos é um dos paradigmas de programação mais utilizados no mundo do desenvolvimento.
+
+Ela tem como base alguns connceitos:
+
+- **Classes**: São modelos usados para a criação de objetos;
+- **Atributos**: São características de uma classe;
+- **Métodos**: Define comportamentos de uma classe.
+
+Além disso, o paradigma OO tem outros conceitos relevantes como:
+- **Herança**: É um mecanismo que permite que uma classe herde características e comportamentos de uma outra classe.
+- **Objeto**: É uma instância de uma classe.
+
+Classes passaram a existir a partir do JS ES6, antes disso, usava-se funções para emular um comportamento de classe. No fundo, a palavra reservada `class` é um `syntatic sugar` do Javascript para tornar a programação orientada a objetos mais familiar para quem vem de outras linguagens onde este conceito é nativo da linguagem, como `Java` e `C++`. Isso é tão verdade que alguns conceitos relevantes de OO em outras linguagens não estão presentes ainda o Javascript, como `Interface`.
+
+### **Criando uma classe**
+```js
+class <nome da classe> {
+  constructor(parametros) {
+    this.<propriedade> = parametros
+  }
+
+  <nome do metodo>() {
+    return this.<propriedade>
+  }
+}
+```
+
+### **Para saber mais: this, bind(), apply() e call()**
+
+Você deve ter reparado na palavra-chave `this` que foi utilizada anteriormente, tanto nas funções construtoras quanto nas classes, e que significa literalmente “isso” ou “este”. Vamos ver com mais detalhes o que faz o `this` e mais três métodos que utilizamos para manipulá-lo: `call()`, `apply()` e `bind()`.
+
+Vamos criar um objeto pessoa com propriedades nome e email, além de um método para imprimir o nome da pessoa no terminal:
+```js
+const pessoa = {
+ nome: "Ana",
+ email: "a@email.com",
+ imprimeNome: function(){
+   console.log(`${pessoa.nome}`)
+ }
+}
+
+pessoa.imprimeNome() //Ana
+```
+Veja que o método `imprimeNome()` faz referência ao próprio objeto pessoa. O JavaScript tem uma forma melhor de fazer isso, que não “acopla” o método ao nome do objeto:
+```js
+const pessoa = {
+ nome: "Ana",
+ email: "a@email.com",
+ imprimeNome: function(){
+   console.log(`${this.nome}`)
+ }
+}
+
+pessoa.imprimeNome() //Ana
+```
+Podemos visualizar melhor a utilização do `this` para “desacoplar” o método do objeto com um outro exemplo:
+```js
+function imprimeNomeEmail(){
+ console.log(`nome: ${this.nome}, email ${this.email}`)
+}
+```
+Acima temos uma função que não está ligada a nenhum objeto. Vamos ver como podemos utilizá-la para objetos diferentes de forma independente:
+```js
+const pessoa1 = {
+  nome: "Ana",
+  email: "a@email.com",
+  imprimeInfo: imprimeNomeEmail
+}
+
+const pessoa2 = {
+  nome: "Paula",
+  email: "p@email.com",
+  imprimeInfo: imprimeNomeEmail
+}
+
+pessoa1.imprimeInfo()
+//nome: Ana, email a@email.com
+pessoa2.imprimeInfo()
+//nome: Paula, email p@email.com
+```
+Dentro de cada objeto, criamos um método que chama a função externa `imprimeNomeEmail()`. Essa função é executada no contexto de cada um dos objetos e o `this` faz com que ela utilize os valores de propriedade desses objetos.
+
+O `this` representa o objeto que executa a função. Podemos dizer que a instrução passada para o JavaScript é: “execute a função aqui, utilizando este contexto”.
+
+No caso de atributos das funções construtoras ou dos construtores de classe, o `this` tem função similar: podemos dizer que o construtor recebe os atributos deste objeto:
+```js
+function Pessoa(nome, email){
+  this.nome =nome
+  this.email =email
+  this.imprimeNomeEmail = function(){
+      console.log(`nome: ${this.nome}, email: ${this.email}`)
+  }
+}
+```
+Quando criarmos objetos com base nesta função construtora, os atributos que a função receber como parâmetro (nome e email) serão definidos no contexto de cada um deles:
+```js
+const pessoa1 = new Pessoa("Ana", "a@email.com")
+const pessoa2 = new Pessoa("Paula", "p@email.com")
+
+pessoa1.imprimeNomeEmail()
+// nome: Ana, email: a@email.com
+pessoa2.imprimeNomeEmail()
+// nome: Paula, email: p@email.com
+```
+É possível manipular os valores de `this` e o JavaScript tem três métodos para isso:
+
+<br>
+
+### `call()`
+
+<br>
+
+Esse método permite que uma função seja chamada com parâmetros e valor de `this` específicos. Vamos ver um exemplo:
+```js
+function imprimeNomeEmail(tipoCliente){
+ console.log(`${tipoCliente} - nome: ${this.nome}, email: ${this.email}`)
+}
+
+const cliente1 = {
+ nome: "Carlos",
+ email: "c@email.com"
+}
+
+const cliente2 = {
+ nome: "Fred",
+ email: "f@email.com"
+}
+```
+Criamos uma função `imprimeNomeEmail` que recebe como parâmetro um dado que chamamos de `tipoCliente`. Esta função imprime no terminal um string com `tipoCliente` mais duas informações que estão associadas a algum objeto (ainda não informado) com `this`.
+
+Vamos executar a função com `call()`:
+```js
+imprimeNomeEmail.call(cliente1, "cliente especial")
+// cliente especial - nome: Carlos, email: c@email.com
+
+imprimeNomeEmail.call(cliente2, "cliente estudante")
+// cliente estudante - nome: Fred, email: f@email.com
+```
+Como a função está sendo chamada como objeto do método `call()`, podemos especificar que o contexto de `this` em cada chamada se refere a um objeto diferente (`cliente1` e `cliente2`), sem a necessidade de adicionar a função em cada um dos objetos.
+
+O primeiro parâmetro do método `call()` se refere ao objeto que será usado como contexto do `this` e, do segundo parâmetro em diante, são passados os argumentos que a função deve receber. No caso acima, há somente um parâmetro, a string `tipoCliente`.
+
+<br>
+
+### `apply()`
+
+<br>
+
+O método `apply()` funciona de forma muito semelhante ao `call()`, porém recebe os argumentos em um array ao invés de separados:
+```js
+function imprimeNomeEmail(tipoCliente, agencia){
+ console.log(`
+   ${tipoCliente} da agência ${agencia}:
+   - nome: ${this.nome}, email: ${this.email}
+   `)
+}
+
+const cliente1 = {
+ nome: "Carlos",
+ email: "c@email.com"
+}
+
+const cliente2 = {
+ nome: "Fred",
+ email: "f@email.com"
+}
+```
+
+Chamando `imprimeNomeEmail` com o método `apply()` e passando um array de dados como segundo parâmetro (lembrando que o primeiro parâmetro de apply() se refere ao contexto de `this`, igual ao método call():
+```js
+const clienteEspecial = ["cliente especial", "Rio de Janeiro"]
+const clienteEstudante = ["cliente estudante", "Fortaleza"]
+
+imprimeNomeEmail.apply(cliente1, clienteEspecial)
+// cliente especial da agência Rio de Janeiro: - nome: Carlos, email: c@email.com
+
+imprimeNomeEmail.apply(cliente2, clienteEstudante)
+// cliente estudante da agência Fortaleza: - nome: Fred, email: f@email.com
+```
+Utilize o método `apply()` caso você tenha um array de dados e o `call()` para passar valores individuais como parâmetro. Lembre-se que o array deve seguir a ordem correta dos parâmetros informado na função.
+
+<br>
+
+### `bind()`
+
+<br>
+
+O método `bind()` “prende” ou “liga” uma função ao contexto de um objeto. Por exemplo:
+```js
+const personagem = {
+  nome: "Princesa Leia",
+  apresentar: function(){
+    return `a personagem é ${this.nome}`
+  }
+}
+```
+O objeto acima contém uma propriedade `nome` e um método `apresentar` que retorna um string com nome; `this.nome` liga a propriedade nome ao contexto do objeto em que a função está definida, ou seja, “este objeto”.
+
+Vamos ver o que acontece se tentarmos executar essa função a partir de outro contexto:
+```js
+const personagemGenerico = personagem.apresentar
+console.log(personagemGenerico())
+//a personagem é undefined
+```
+Quando atribuímos `apresentar()` à variável `personagemGenerico` estamos retirando a função `apresentar()` do contexto do objeto na qual foi criada, e por isso `this` não está mais acessível; a função perdeu a referência original e não consegue mais localizar onde está `this`.
+
+Resolvemos este problema com `bind()`:
+```js
+const personagemDefinido = personagemGenerico.bind(personagem)
+console.log(personagemDefinido())
+//a personagem é Princesa Leia
+```
+Acima, utilizamos o método `bind()` para “ligar” a função que atribuímos a `personagemGenerico` ao objeto `personagem`. Assim, sempre que esta função for executada a partir da variável `personagemDefinido`, a função original vai usar o objeto `personagem` como contexto de execução. Dessa forma, `this` sempre se refere ao objeto `personagem` e é capaz de acessar suas propriedades.
+
+Estes três métodos têm uma variedade enorme de usos no dia a dia da programação com JavaScript, faça mais testes a partir dos exemplos acima para se familiarizar com os conceitos.
+
+### **Resumo**:
+- `this`: referencia a própria classe
+- `call()`: passa para uma função em qual contexto ela deve ser executada
+- `apply()`: semelhante ao call mas o segundo parâmetro deve ser um array de valores
+- `bind()`: executa no contexto de um determinado objeto
+
+### **Métodos e propriedades**
+
+É possível herdar métodos e propriedades de uma classe usando a palavra-chave `extends`. Caso a classe pai tenha uma função construtora, ela deve ser invocada na classe filha, utilizando a palavra-chave `super`.

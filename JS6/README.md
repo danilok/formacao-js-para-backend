@@ -46,3 +46,58 @@ Este arquivo contém informações sobre o pacote/projeto, como nome, versão, d
 - O sistema CJS (CommonJS) foi desenvolvido para funcionar como o sistema de exportação/importação de módulos do NodeJS.
 - O ESM (EcmaScript Modules) foi desenvolvido para que o JavaScript tivesse nativamente seu próprio sistema de módulos - estamos falando do JavaScript interpretado nos navegadores.
 - O NodeJS implementou o suporte ao ESM a partir da versão 13.
+
+## Carregamento de arquivos
+
+Usando a função `fs` do próprio node.
+
+## Tratamento de erros
+
+Para disparar um erro, usar a palavra-chave `throw`.
+
+## Promessas
+
+Promessas ou `promises` é uma das formas no Javascript de tratar execuções assíncronas. Esse tipo de execução acontece quando não temos como saber quanto tempo um processamento vai ser encerrado como leitura de arquivo, requisição a uma API, etc. 
+
+Assim que uma promise terminar de ser executada, é possível obter o resultado da execução usando o método `then()` e para tratar qualquer erro durante a execução da promise, usa-se o método `catch()`.
+
+## Para saber mais: Promessas com .then() vs async/await
+
+Para entender melhor as diferenças e como utilizar cada uma delas, temos este artigo no blog da [Alura](https://www.alura.com.br/artigos/async-await-no-javascript-o-que-e-e-quando-usar).
+
+## Para saber mais: O construtor new Promise()
+
+```
+function promessa(bool) {
+ const x = bool;
+ return new Promise((resolve, reject) => {
+   if (!x) {
+     reject(new Error("falha na promessa"));
+   }
+   resolve("sucesso na promessa");
+ });
+}
+
+function exibeResposta(textoResult) {
+ console.log(textoResult);
+}
+
+promessa(true)
+ .then((texto) => exibeResposta(texto))
+// sucesso na promessa
+```
+
+Concluindo, sempre temos que ter em mente os estados possíveis de qualquer promessa em JavaScript:
+
+1. Promessas podem ser concluídas de duas formas: fulfilled (realizada, completa) ou rejected (rejeitada), o que equivale a duas situações possíveis, ou a promessa se concretizou (retornou os dados ou executou o código que deveria) ou não.
+2. Promessas que não estão fulfilled nem rejected estão pending (pendentes). Ou seja, ainda não é possível saber o resultado final porque o processamento ainda não foi concluído.
+3. Após a finalização do processamento, a promessa passa para o estado de settled (concluída), independente do resultado.
+4. Uma vez que a promessa está settled seu resultado não se altera mais. Ou seja, uma promessa que se concluiu como rejected não muda mais para o estado de fulfilled e vice-versa.
+
+## async/await
+
+Forma mais parecida para codificar um código assíncrono como síncrono. A função assíncrona precisa ter a palavra-chave `async` em sua declaração e qualquer método assíncrono no corpo desta função deve ser precedido pela palavra-chave `await`. Caso ela retorne algum valor, o resultado da função pode ser atribuido à variáveis. Neste contexto, os erros são capturados usando o bloco `try-catch`.
+
+Ainda existe um último bloco, o finally, que é executado sempre, independentemente da execução do código ter sido resolvida no try ou gerado um erro passado para o catch. Tanto catch quanto finally são opcionais, mas o try deve sempre estar acompanhado de um ou outro.
+
+Ao contrário do catch, o finally não recebe nenhum dado através dos parênteses ( ).

@@ -157,3 +157,34 @@ Ao usar o método de expressão regular `exec()`, a expressão regular somente s
     ...
   }
 ```
+
+# 4. Usando a linha de comando
+
+## Executando comandos
+
+O arquivo `index.js` contém o código do processamento para extração de links de um arquivo, mas para um usuário do nosso pacote, executar `index.js` nem sempre será nossa melhor opção.
+
+Para facilitar a execução do processamento, vamos organizar melhor o pacote. O arquivo `index.js` conterá a lógica necessária para executar o processamento da extração de links de um arquivo. Mas a execução dará de outro arquivo.
+
+Usando o `NodeJS, é bem comum de utilizarmos a linha de comando (_command line_), shell, prompt de comando para executar comandos. Esse tipo de interação é chamada de **command line interface**, que é a forma em que o usuário interage com a nossa biblioteca atraveś de linhas de comando. O acrônimo para isso é _cli_.
+
+O arquivo `cli.js` será responsável pela interação com o usuário. Mas até o momento, não é possível deste novo arquivo utilizar qualquer função existente no arquivo `index.js`. Para podermos utilizar a função que pega um arquivo no arquivo `cli.js`, primeiro é necessário exportar a função do arquivo de origem. Exemplo:
+```js
+export { pegaArquivo };
+```
+Existem outras formas de exportação como `export default` ou `module.exports`.
+
+Após a exportação, é possível importar as funções no arquivo `cli.js` através da instrução `import ... from <arquivo/modulo>`.
+
+
+## Organizando entrada e saídas
+
+Algumas refatorações são necessárias para organizar melhor o desenvolvimento do pacote.
+
+O arquivo `index.js` não deve mais ter nenhuma impressão de informação. Esta característica deve ser repassada para o `cli.js` pois este arquivo que justamente tem o papel de fazer a interação com o usuário. Desta forma, o `index.js` deve retornar as informações processadas apenas e não mais fazer qualquer impressão.
+
+## Scripts
+
+Para facilitar a utilização do desenvolvimento, o `NodeJS` permite criar instruções ou atalhos para executar comandos. Isto é configurado no arquivo `package.json` dentro da propriedade `"scripts"`. Nesta propriedade é possível passar o nome de um script e quais comandos ele deverá executar ao ser invocado.
+O scripts são executado usando o seguinte comando: `npm run <nome script>`.
+

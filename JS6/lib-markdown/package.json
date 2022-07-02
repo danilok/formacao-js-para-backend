@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "cli": "node cli.js ../arquivos/texto1.md",
+    "dir": "node dir.js ../arquivos/"
   },
   "type": "module",
   "keywords": [],

@@ -188,3 +188,48 @@ O arquivo `index.js` não deve mais ter nenhuma impressão de informação. Esta
 Para facilitar a utilização do desenvolvimento, o `NodeJS` permite criar instruções ou atalhos para executar comandos. Isto é configurado no arquivo `package.json` dentro da propriedade `"scripts"`. Nesta propriedade é possível passar o nome de um script e quais comandos ele deverá executar ao ser invocado.
 O scripts são executado usando o seguinte comando: `npm run <nome script>`.
 
+# 5. Validando Links
+
+## Adicionando opções
+
+Através dos argumentos de execução do programa, é possível passar opções que alteram a forma que o programa vai executar. Passando a opção `validar`, podemos informar que os links do arquivo devem ser validados.
+
+## Montando o objeto de links
+
+Através da lista de links, antes de validá-los, é melhor organizá-los para ter apenas as URLs dos links. Para isso, vamos apenas extrair os valores de cada objeto de links e retornar a string da URL.
+
+Podemos utilizar o método `Object.values()` para retornar apenas os valores de um objeto em uma lista ou array. Para retornar os valores como string, é possível usar o `join`, que transforma uma lista em uma string, concantenando cada valor pelo parâmetro informado. No nosso caso, cada lista de valor terá apenas um link e não precisamos concatenar com mais nada, então o parâmetro pode ficar vazio.
+
+## Validando links
+
+Para fazer as requisições e saber se um link está válido ou não, vamos utilizar o pacote `node-fetch` que é uma implementação semelhante à Fetch API existente nos browsers.
+
+A instalação do pacote é feita pelo seguinte comando:
+```
+npm i node-fetch
+```
+
+A execução do fetch sempre retornará uma `Promise`, e como vários links deverão ser validados, temos que usar o método `Promise.all()` que permite uma lista de `promises` sejam executadas e aguardemos o resultado de todas.
+
+O `fetch` retorna um objeto com várias propriedades, dentre elas o `status`, vamos retornar esta propriedade de cada requisição informando se a requisição foi um sucesso ou erro.
+
+# Requisições e respostas
+
+Neste curso começamos a abordar alguns conceitos importantes no desenvolvimento back-end e um deles é o de **requisição/resposta**, que são as duas pontas da comunicação cliente-servidor via HTTP.
+
+**HTTP, ou Hyper Text Transfer Protocol** (protocolo de transferência de hiper-texto) é um protocolo de comunicação entre computadores. Por ser um protocolo, toda a comunicação é feita segundo uma série de regras. Temos um artigo bem bacana sobre HTTP no [blog da Alura](https://www.alura.com.br/artigos/desmistificando-o-protocolo-http-parte-1) e a leitura é mais do que recomendada para entender o que acontece quando acessamos um site - inclusive o que você está lendo agora. Vai te ajudar bastante em seus próximos passos no estudo de desenvolvimento back-end, seja com JavaScript ou outra linguagem.
+
+## Montando o objeto de resposta
+
+Temos um objeto com o links e outro com status, mas o que necessário é um saber qual o link e seu respectivo status.
+
+Para adicionar a propriedade `status` no objeto de links, pode-se mapear a lista de links e retornar um novo objeto com tudo que existe no objeto de link e adicionar a propriedade `status` com o valor do status na lista de status na mesma posição.
+
+Para adicionar todas propriedades de um objeto em outro, pode-ser usar o operador de espalhamento, ou `spread operator`, informando `...` antes do objeto.
+```
+const obj1 = { a: 1, b: 2 }
+const obj2 = {...obj1, c: 3 } // { a:1, b:2, c:3 }
+```
+
+Este operador tem vários usos práticos tanto para arrays quanto para objetos. Você pode praticar mais o uso dele e ver outros exemplos neste [Alura+](https://cursos.alura.com.br/extra/alura-mais/destructuring-em-js-c308) sobre desestruturação.
+

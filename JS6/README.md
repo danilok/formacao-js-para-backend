@@ -233,3 +233,94 @@ const obj2 = {...obj1, c: 3 } // { a:1, b:2, c:3 }
 
 Este operador tem vários usos práticos tanto para arrays quanto para objetos. Você pode praticar mais o uso dele e ver outros exemplos neste [Alura+](https://cursos.alura.com.br/extra/alura-mais/destructuring-em-js-c308) sobre desestruturação.
 
+# 6. Testes unitários
+
+## Começando com testes
+
+Para fazer os testes unitários do projeto, será utilizado um framework bem conhecido para testes em código JavaScript chamado `jest`.
+
+Para instalar esse framework, usar o seguinte comando:
+```
+npm i --save-dev jest
+```
+A flag `--save-dev` indica que esta dependência serve apenas em tempo de desenvolvimento, ao publicar o pacote, esta dependência não precisa estar no pacote final.
+
+No arquivo `package.json`, este pacote ficará listado dentro da propriedade `devDependencies`, separando das demais dependências realmente necessárias para que o desenvolvimento funcione.
+
+Para facilitar a execução dos testes, vamos adicionar um script no `package.json`, desse modo quando desejar executar um teste, ficará mais simples de executar.
+
+```json
+"scripts" {
+  "test": "jest"
+}
+```
+
+O comando para executar o script é `npm test` ou `npm run test`.
+
+Para organizar os testes, vamos criar uma pasta no diretório raiz do projeto chamada de `test`.
+
+Os arquivos que contém os testes tem o sufixo `.test.js`. O começo do nome do arquivo está relacionado ao arquivo cuja lógica será testada.
+No caso do arquivo `index.js`, o teste relacionado estará no arquivo `index.test.js`.
+
+Um arquivo de teste pode ter um mais testes do arquivo relacionado. Para inciar, um teste simples pode ser escrito da seguinte forma.
+```js
+import { pegaArquivoAsync } from '../index.js';
+
+test('deve ser função', () => {
+  expect(typeof pegaArquivoAsync).toBe('function');
+})
+```
+Executando o teste acima, deve passar com êxito.
+
+## Adicionando testes
+
+Vamos adicionar testes, agora para efetivamente testar a função. Como a funcionalidade a ser testada é ler um arquivo e extrair os links, é uma prática escrever um arquivo de exemplo simples para ter um cenário controlado e previsível.
+
+Com o arquivo de exemplo, sabendo o resultado que ele retornará, podemos adicionar um teste que validará o retorno da função com o retorno esperado.
+
+```js
+import { pegaArquivoAsync } from '../index.js';
+
+const arrayResult = [
+  {
+    FileList: 'https://developer.mozilla.org/pt-BR/docs/Web/API/FileList'
+  }  
+]
+
+describe('pegaArquivo::', () => {
+  ...
+  it('deve retornar o array com resultados', async () => {
+    const resultado = await pegaArquivoAsync('./test/arquivos/texto1.md')
+    expect(resultado).toEqual(arrayResult)
+  })
+  ...
+})
+```
+
+Para fazer a comparação do array de links, foi usado o método `toEqual()` pois ele consegue validar objetos e não apenas valores primitivos.
+
+## Tipos de testes
+
+Durante este curso escrevemos nossos primeiros testes unitários. Mas afinal, quais são os tipos de teste e para que eles servem?
+
+Um teste unitário, como os que fizemos, testa pequenas partes (ou unidades) de código; normalmente a menor parte “testável” do código. É o primeiro tipo de testes que fazemos, e além de testar funcionalidades nos ajudam a pensar em casos de uso; por exemplo, o que deve acontecer no caso de input incorreto de dados, ou falha em uma resposta. Ao testarmos as possibilidades, percebemos muitas vezes o que está faltando desenvolver.
+
+Além dos testes unitários, ainda existem outros tipos, como os testes de integração, que justamente integra diferentes módulos e envolve uma complexidade maior, e os testes de interface, que simulam a interface e os eventos que o usuário pode efetuar nela, como clique em um botão ou preenchimento de um input.
+
+Temos dois artigos no blog da Alura falando sobre testes: [Testes em JavaScript](https://www.alura.com.br/artigos/testes-em-javascript), que dá um panorama sobre o que são tipos de testes, e [testes com mocks e stubs](https://www.alura.com.br/artigos/testes-com-mocks-e-stubs) que apresenta estas duas ferramentas de testes e como são utilizadas.
+
+## Testando erros
+
+Testar não quer dizer apenas tratar o caso feliz, mas também os erros. Faz parte dos testes unitários avaliar esses cenários.
+
+```js
+import { pegaArquivoAsync } from '../index.js';
+
+describe('pegaArquivo::', () => {
+  it('deve lançar um erro na falta de arquivo', async () => {
+    await expect(pegaArquivoAsync('/home/juliana/Documents/alura/lib-markdown/test/arquivos')).rejects.toThrow(/ENOENT/)
+  })
+})
+```
+
+Caso seja informado um caminho inexistente, a execução deve gerar uma exceção e ela pode ser capturada pelo teste. Isso faz parte de um teste feito.

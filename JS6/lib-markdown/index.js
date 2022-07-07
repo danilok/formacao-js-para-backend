@@ -1,5 +1,3 @@
-import chalk from 'chalk';
-
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -14,7 +12,7 @@ function extraiLinks(texto) {
 }
 
 function trataErro(erro) {
-  throw new Error(chalk.red(erro.code, 'Caminho do arquivo inválido'));
+  throw new Error(erro.code, 'Caminho do arquivo inválido');
 }
 
 function pegaArquivoCallback(caminho) {
@@ -23,7 +21,6 @@ function pegaArquivoCallback(caminho) {
     if (erro) {
       trataErro(erro);
     }
-    console.log(chalk.green(texto));
   })
 }
 
@@ -34,9 +31,8 @@ function pegaArquivoCallback(caminho) {
 function pegaArquivoPromise(caminho) {
   const encoding = 'utf-8';
   fs.promises.readFile(caminho, encoding)
-  .then((texto) => console.log(chalk.green(texto)))
-  .catch((erro) => trataErro(erro))
-  .finally(() => console.log(chalk.yellow('Promise concluída!')));
+  .then((texto) => console.log(texto))
+  .catch((erro) => trataErro(erro));
 }
 
 // pegaArquivoPromise('../arquivos/texto1.mds')
@@ -50,8 +46,6 @@ async function pegaArquivoAsync(caminho) {
     return extraiLinks(texto);
   } catch (erro) {
     trataErro(erro);
-  } finally {
-    console.log(chalk.yellow('Promise concluída!'));
   }
 }
 
@@ -65,16 +59,13 @@ async function pegaDiretorio(caminho) {
     const caminhoAbsoluto = path.join(caminho[1], '..', caminho[2]);
     const encoding = 'utf-8';
     const arquivos = await fs.promises.readdir(caminhoAbsoluto, { encoding });
-    // console.log(chalk.yellow('arquivos'), arquivos);
     const resultado = await Promise.all(arquivos.map(async (arquivo) => {
       const caminhoArquivo = `${caminhoAbsoluto}${arquivo}`;
-      // console.log(`Arquivo em processamento: ${caminhoArquivo}`);
       return {
         arquivo,
         links: await pegaArquivoAsync(caminhoArquivo)
       };
     }));
-    // console.log(chalk.yellow('resultado'), resultado)
     return resultado;
   } catch (erro) {
     trataErro(erro);

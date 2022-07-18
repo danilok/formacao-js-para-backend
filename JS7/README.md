@@ -32,3 +32,5 @@ User <|-- Docente
 
 @enduml
 ```
+
+![uncached image](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/danilok/formacao-js-para-backend/test/plantuml/JS7/projeto.wsd)

@@ -11,7 +11,7 @@ class User {
 
 class Admin {
   constructor()
-  exibirInfos()
+  criarCurso()
 }
 
 class Docente {

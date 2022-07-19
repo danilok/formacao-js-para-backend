@@ -833,3 +833,190 @@ Boa parte dos frameworks e bibliotecas do NodeJS vão trabalhar com classes ou c
 - Como funciona a criação de objetos em JavaScript com o modelo de protótipo, que é a forma nativa do JavaScript trabalhar com o conceito de orientação a objetos conhecido como “herança”, quando objetos recebem propriedades e métodos de outros;
 - Como acessar as propriedades `prototype` e `__proto__` e, através delas, identificar a cadeia de protótipos desde o nível mais baixo, normalmente um objeto do próprio tipo de dado, como `Object` ou `Function`;
 - As duas formas (anteriores às classes) que o JavaScript utiliza para criação de objetos a partir de modelos: `Object.create()` e funções construtoras com `new`; sendo o primeiro mais indicado para se trabalhar com protótipos utilizando as melhores práticas e o segundo mais próximo à sintaxe de classes.
+
+# 3. Classes e herança
+
+## Estrutura da classe
+
+Usamos a palavra-chave `class` para definir uma classe. As classes geralmente tem uma função construtora chamada `constructor` que inicializa as propriedades da classe. Os métodos da classe não são ser precedidas pela palavra-chave `function` e eles sempre devem possuir um nome. Nas classes, caso alguma propriedade interna seja usada nos métodos, usa-se o `this` para indiciar esse acesso às propriedades da classe. A criação de uma nova instância da classe é usando o operador `new`.
+
+```js
+class User {
+  constructor(nome, email, nascimento, role, ativo = true) {
+    this.nome = nome;
+    this.email = email;
+    this.nascimento = nascimento;
+    this.role = role || 'estudante'
+    this.ativo = ativo;
+  }
+
+  exibirInfos() {
+    return `${this.nome} ${this.email}`;
+  }
+}
+
+const novoUser = new User('Juliana', 'j@j.com', '2020-01-01');
+console.log(novoUser);
+console.log(novoUser.exibirInfos());
+console.log(User.prototype.isPrototypeOf(novoUser)); //true
+```
+
+## Herança de classe
+ 
+Para poder trabalhar com herança de classe e poder organizar melhor o código, vamos fazer a utilização de módulos no Javascript. Para isso, primeiro temos que configurar nosso projeto para que o mesmo entenda que vamos utilizar módulos. 
+
+Para isso vamos inicializar o projeto com `npm init -y` e no arquivo `package.json` adicionar uma linha com a seguinte informação `"type": "module",`. Com esta configuração, poderemos utilizar os comandos `import` e `export` nos arquivos do projeto.
+
+A classe `User` anteriormente desenvolvida vamos exportá-la para poder utilizar em outros arquivos.
+
+Vamos criar uma classe `Admin` agora que herdará propriedades e métodos existentes na classe `User`. 
+No arquivo `Admin.js`, vamos importar a classe `User` exportada no arquivo `User.js`. Para que a classe `Admin` herde a classe `User`, temos que usar a palavra-chave `extends`. Outro detalhe, no método `constructor` da subclasse, no caso `Admin`, temos que usar a chamada `super` que chamará o método construtor da superclasse, no caso `User`.
+
+```js
+import User from "./User.js";
+
+class Admin extends User {
+  constructor(nome, email, nascimento, role = 'admin') {
+    super(nome, email, nascimento, role)
+  }
+}
+
+const novoAdmin = new Admin('Rodrigo', 'r@r.com', '2019-01-01');
+console.log(novoAdmin);
+console.log(novoAdmin.exibirInfos());
+```
+
+## Adicionando métodos
+
+As subclasses podem ter seus próprios métodos, para isso é só definir novos métodos normalmente. Esses métodos poderão ser chamados pela classe mas não pelas superclasses.
+
+Para exemplificar, a classe `Docente` que herda a classe `User` abaixo, tem um método específico dela chamada `aprovaEstudante`.
+
+```js
+import User from "./User.js";
+
+class Docente extends User {
+  constructor(nome, email, nascimento, role = 'docente') {
+    super(nome, email, nascimento);
+  }
+
+  aprovaEstudante(estudante, curso) {
+    return `Estudante ${estudante} passou no curso ${curso}`;
+  }
+}
+
+const novoDocente = new Docente('Diogo', 'd@d.com', '2011-01-03');
+console.log(novoDocente);
+console.log(novoDocente.exibirInfos());
+console.log(novoDocente.aprovaEstudante('Juliana', 'JS'));
+```
+
+## Scrict Mode
+
+O modo estrito do JavaScript serve para impedir que alguns comportamentos do JavaScript causem “falhas silenciosas” (transformando em erros que são lançados pelo interpretador) e corrigir alguns outros que podem induzir a bugs potenciais e comportamentos inesperados.
+
+JavaScript é uma linguagem que não tem breaking changes. Ou seja, não é possível corrigir certos comportamentos não desejados retirando o código das novas versões, pois há o risco de quebrar código que já está rodando em sites e aplicações na internet. O modo estrito é uma forma de ajudar a contornar alguns destes comportamentos sem que o código “não estrito” deixe de funcionar.
+
+Para saber mais sobre o scrict mode do JavaScript e por que ele existe, você pode conferir na [documentação do MDN](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Reference/Strict_mode).
+
+## Métodos estáticos
+
+Quando criamos uma classe, é possível designar que determinados métodos sejam **estáticos**. Ou seja, estes métodos não são inicializados quando criamos uma nova instância de classe (usando `new`), mas sim a partir da própria classe.
+
+Por exemplo:
+
+```js
+class User {
+ constructor(nome, email, cpf) {
+  this.nome = nome
+  this.email = email
+  this.cpf = cpf
+}
+exibirInfos() {
+  return `${this.nome}, ${this.email}, ${this.cpf}`
+}
+}
+```
+
+No exemplo acima, o método `exibirInfos()` não é um método estático, e só é possível executá-lo a partir de uma instância da classe `User`:
+
+```js
+const novoUser = new User('Carol', 'c@c.com', '12312312312')
+console.log(novoUser.exibirInfos()) //Carol, c@c.com, 12312312312
+```
+
+Se tentarmos executar o método sem associá-lo a nenhuma instância da classe, recebemos um erro:
+
+```js
+console.log(User.exibirInfos())
+  //TypeError: User.exibirInfos is not a function
+```
+
+Agora vamos refatorar a classe, declarando `exibirInfos()` como sendo um método estático:
+
+```js
+class User {
+  constructor(nome, email, cpf) {
+    this.nome = nome
+    this.email = email
+    this.cpf = cpf
+  }
+  static exibirInfos() {
+    return `${this.nome}, ${this.email}, ${this.cpf}`
+  }
+}
+```
+Ao executarmos, recebemos o seguinte retorno:
+
+```js
+console.log(User.exibirInfos())
+  //undefined, undefined, undefined
+```
+
+Não recebemos mais um erro, pois agora o método é `static` e é executado a partir da própria classe, e não de uma instância dela. Porém, como o método depende de informações recebidas do construtor e isso não ocorreu (uma vez que não criamos uma instância e nem passamos os dados necessários), recebemos `undefined` para cada propriedade.
+
+Vamos fazer mais um teste:
+
+```js
+class User {
+  constructor() {
+    this.nome = 'Camila'
+    this.email = 'c@c.com'
+    this.cpf = '12312312312'
+  }
+  exibirInfos() {
+    return `${this.nome}, ${this.email}, ${this.cpf}`
+  }
+
+  static exibeNome(nome) {
+    return nome
+  }
+}
+```
+
+Mantivemos o método `exibirInfos()` como estava e criamos um novo método, estático, chamado `exibeNome()`. Porém, já vimos que métodos estáticos não podem ser executados a partir de uma instância, então como isso vai funcionar?
+
+```js
+const novoUser = new User('Carol', 'c@c.com', '12312312312')
+const nomeUser = novoUser.nome
+console.log(User.exibeNome(nomeUser)) //Camila
+```
+
+Criamos uma nova instância de `User` e agora temos acesso à propriedade `nome` desta instância, que estamos chamando de `novoUser`. Agora podemos atribuir a propriedade `novouser.nome` à uma variável (que chamamos de `nomeUser`) e passar o valor dessa variável como parâmetro para a chamada do método estático `User.exibeNome()`.
+
+Na realidade, como `exibeNome()` é um método estático, é possível executá-lo passando qualquer nome como parâmetro:
+
+```js
+console.log(User.exibeNome('Jaqueline')) //Jaqueline
+```
+
+Os métodos estáticos são normalmente utilizados para chamadas de métodos internos de frameworks e bibliotecas, ou em qualquer caso que a classe não dependa de instâncias específicas.
+
+Você pode ver mais sobre esse assunto, com mais exemplos, na [documentação do MDN](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Reference/Classes/static).
+
+## O que aprendemos?
+
+- O que são e como funcionam as classes, elementos essenciais para se trabalhar com orientação a objetos em grande parte das linguagens de programação voltadas para este paradigma. As classes fornecem um modelo para a criação de cópias (instâncias) de objetos que compartilham dos mesmos tipos de propriedades e métodos;
+- O conceito de herança de classe, também importante para se trabalhar com orientação a objetos, como criar subclasses que herdam propriedades e métodos de uma superclasse e como reaproveitar estas propriedades e métodos da superclasse através da função `super()`;
+- Como uma subclasse pode ter propriedades e métodos próprios, além dos recebidos da superclasse, e como declarar isso no código criando novos métodos;
+- A praticar a sintaxe de classe com JavaScript, criando classes, subclasses, propriedades, construtores e métodos.

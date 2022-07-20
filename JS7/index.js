@@ -24,10 +24,13 @@ console.log(novoAdmin.nome);
 novoAdmin.nome = 'Carlos';
 console.log(novoAdmin.nome);
 console.log(novoAdmin.exibirInfos());
-try {
-  novoAdmin.nome = '';
-  console.log(novoAdmin.nome);
-  console.log(novoAdmin.exibirInfos());
-} catch (error) {
-  console.error(error);
-}
+// try {
+//   novoAdmin.nome = '';
+//   console.log(novoAdmin.nome);
+//   console.log(novoAdmin.exibirInfos());
+// } catch (error) {
+//   console.error(error);
+// }
+
+const novoDocente = new Docente('Diogo', 'd@d.com', '2011-01-03');
+console.log(novoDocente.exibirInfos());

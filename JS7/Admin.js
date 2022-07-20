@@ -10,6 +10,10 @@ class Admin extends User {
   //   return this.#montaObjUser()
   // }
 
+  exibirInfos() {
+    return `${this.nome} ${this.email} ${this.ativo}`;
+  }
+
   criarCurso(nomeDoCurso, vagas) {
     return `Curso de ${nomeDoCurso} criado com ${vagas} vagas`
   }

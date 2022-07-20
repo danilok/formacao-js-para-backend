@@ -54,7 +54,7 @@ class User {
   }
 
   exibirInfos() {
-    return `${this.#nome} ${this.#email}`;
+    return `${this.#nome} ${this.#email} ${this.#nascimento} ${this.#role} ${this.#ativo}`;
   }
 
   exibirObj() {

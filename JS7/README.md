@@ -1465,3 +1465,135 @@ O que aprendemos?
 - O conceito de encapsulamento, que é a ação (ou ações) de “esconder” atributos de uma classe, para evitar acesso indevido a atributos importantes ou dados sensíveis, ou que métodos sejam utilizados de forma errada;
 - Como utilizar a sintaxe de atributos privados do JavaScript, através do prefixo `#`, para que a própria linguagem de programação faça a “segurança” da classe, impedindo o acesso externo a propriedades e métodos assinalados como privados com este prefixo;
 - A criar métodos assessors para “expôr” e permitir acesso e modificação de propriedades de forma controlada e restrita, através do uso das funções `get` para retornar dados específicos e `set` para definir dados específicos.
+
+# 5. Polimorfismo e SOLID
+
+## Polimorfismo
+
+Polimorfismo é a possibilidade de um mesmo método ter comportamentos diferentes nas diferentes hierarquias de classe, isto é, a superclasse e as subclasses terem a mesma assinatura de método (nome e argumentos) mas comportamentos diferentes.
+
+Por exemplo, na classe `Admin` podemos redefinir o método `exibirInfos()` para ter um comportamento diferente do comportamento padrão definido na classe `User`.
+
+```js
+  exibirInfos() {
+    return `${this.nome} ${this.email} ${this.ativo}`;
+  }
+```
+
+A execução do método será diferente para a classe `Admin`.
+
+```js
+const novoUser = new User('Mariana', 'm@m.com', '2000-03-01');
+console.log(novoUser.exibirInfos());
+
+const novoAdmin = new Admin('Caio', 'c@c.com', '2000-04-25')
+console.log(novoAdmin.exibirInfos());
+
+const novoDocente = new Docente('Diogo', 'd@d.com', '2011-01-03');
+console.log(novoDocente.exibirInfos());
+```
+
+A saída será a seguinte:
+```js
+Mariana m@m.com 2000-03-01 estudante true
+Caio c@c.com true
+Diogo d@d.com 2011-01-03 docente true
+
+```
+
+No caso, não tivemos que escrever um método para exibir as informações de um usuário `Admin`, mantivemos a mesma chamada de método, com mesmos parâmetros mas com resultados diferentes.
+
+## SOLID
+
+SOLID é um conjunto de *design patterns* para orientação a objetos. Cada letra do acrônimo tem um significado que será detalhado a seguir:
+
+- **S**: Single Responsability Principle
+- **O**: Open/Closed Principle
+- **L**: Liskov Substitution Principle
+- **I**: Interface Segregation Principle
+- **D**: Dependency Inversion Principle
+
+### Single Responsability Principle
+
+Princípio de responsabilidade única, pode ser descrita que cada módulo deve ser responsável por apenas uma única entidade. Por exemplo, um módulo responsável por Usuários só devem tratar tarefas relacionadas ao usuário, não devem fazer outras coisas como processar pagamentos, abrir conexão com o banco de dados, etc.
+Este princípio não deve ser confundido como fazer uma única coisa, o sentido de responsabilidade é um pouco mais amplo, mais a nível de entidade do que uma tarefa única.
+### Open/Closed Principle
+
+Princípio do Aberto/Fechado diz que um módulo deve estar aberta para expansões, agregar funcionalidades novas mas fechada para alterações de coisas existentes, para evitar quebrar qualquer coisa que esteja funcionando. Caso exista a necessidade de uma funcionalidade nova que poderia ser feita uma alteração em algo que já existe, o correto seria criar um novo método e implementar a nova demanda nele evitando de alterar o comportamento de algo que existia previamente. Este conceito está mais associado a interfaces, conceito que não existe no Javascript mas existe no Typescript.
+
+### Liskov Substitution Principle
+
+Princípio da Substituição de Liskov, referente a Barbara Liskov, que foi quem elaborou este princípio . Esse princípio diz que uma superclasse e uma subclasse podem ser intercambiaveis e não quebrar o funcionamento. A superclasse e subclasse devem respeitar as interfaces, os contratos, definidos na superclasse, e não gerar erros caso a superclasse seja substituída por uma subclasse.
+
+### Interface Segregation Principle
+
+Princípio da Segregação de Interface está associado ao fato que um módulo não deve depender de implementações que não serão utilizados por ela. Este conceito também está mais associado a intefaces. As interfaces são uma forma de estabelecer contratos e caso um módulo não necessite de uma determinada funcionalidade de uma determinada interface, o módulo não precisa implementá-la. Por exemplo, uma classe Foca não precisaria implementar uma interface Bicar pois a Foca não tem bico para poder bicar, essa interface deveria implementada apenas por pássaros.
+
+### Dependency Inversion Principle
+
+Principio da Inversão de Dependência define que uma classe não deve depender de implementações mas de abstrações. Por exemplo, uma classe de Usuário, ao salvar dados não deve implementar a conexão do banco, mas sim utilizar uma abstração (uma outra classe) que será responsável por realizar a conexão com o banco, seja ele SQL, Mongo, Postgres.
+
+### Referências de SOLID
+- [Filipe Deschamps](https://www.youtube.com/watch?v=6SfrO3D4dHM)
+- [Código Fonte TV](https://www.youtube.com/watch?v=mkx0CdWiPRA)
+
+## Interfaces
+
+Como vimos até o momento, a linguagem JavaScript possui muitas particularidades e uma delas é sua própria abordagem para implementação do paradigma de Programação Orientada a Objetos (muito diferente de Java, por exemplo).
+
+Depois que as classes começaram a fazer parte do JavaScript com o lançamento do ES6, outras necessidades surgiram e elementos importantes foram requisitados pela comunidade dev. Um deles é a aplicação do conceito de interfaces.
+
+### O que são interfaces?
+Precisamos lembrar que embora o paradigma POO seja aplicável, JavaScript não nasceu como uma linguagem orientada a objetos. A linguagem originalmente é multi-paradigma e de tipagem dinâmica, isso significa que suporta diferentes formatos de escrita de código (os paradigmas), como o orientado a objetos, imperativo e funcional.
+
+Quando desenvolvemos em orientação a objetos com JavaScript, estamos trabalhando com uma linguagem baseada em protótipos de objetos, ou seja, como vimos na aula sobre o modelo de protótipos, **tudo em JavaScript é um objeto!** pois podemos clonar e estender objetos.
+
+Um exemplo é a partir da criação do objeto `Fruta`, vamos imaginar que esse objeto representa todas as propriedades e funcionalidades das `fruta`s em geral. Dessa forma, a partir do objeto `Fruta`, podemos clonar propriedades gerais e específicas para criar um novo objeto. Por conseguinte, vamos representar uma nova fruta chamada `Banana` a partir de `Fruta` e assim sucessivamente. Se aplicarmos o conceito de classe a esse caso, uma class `Fruta` pode ser estendida para uma `class Banana`.
+
+Além disso, o JavaScript é uma linguagem fracamente tipada (você pode ver mais sobre tipagem neste [artigo](https://www.alura.com.br/artigos/o-que-sao-as-tipagens-estatica-e-dinamica-em-programacao)). Por conta disso, o JavaScript não possui suporte e não trabalha com interfaces, que é um conceito próprio da orientação a objetos e normalmente aplicado em linguagens compiladas e fortemente tipadas. Vamos entender melhor?
+
+As interfaces possuem um papel muito importante na programação orientada a objetos, uma vez que esse paradigma é baseado na ideia de que os objetos apresentam uma `interação entre si`. Nesse sentido, as interfaces de um objeto funcionam como uma coleção de métodos pelos quais é possível realizar essas interações.
+
+Imagine uma fôrma pré-definida/moldada para alguma coisa. As interfaces funcionam de forma similar, é como um “contrato de código”, onde você pode nomear, parametrizar ou descrever exatamente quais serão os tipos de objetos gerados a partir desse “molde”.
+
+Normalmente você pode usar interfaces em **TypeScript** durante a criação do contrato que as classes devem seguir e os membros da interface que essa classe deve implementar. Além disso, você pode representar os tipos na sua aplicação, assim como sua declaração normal de tipo de dado. Interface então é uma estrutura que define um contrato na sua aplicação, e as classes que derivam de uma interface obrigatoriamente devem seguir a estrutura fornecida pela interface, ou seja, devem seguir seus tipos e métodos. O compilador do TypeScript não converte interfaces para JavaScript, e imaginem a confusão que seria se esse conceito fosse aplicado a uma linguagem fracamente tipada...
+
+A interface é construída por meio da checagem de tipos, que são as conhecidas “*duck typing*” (tipagem pato) ou a “structural subtyping” (subtipagem estrutural).
+
+```
+O [duck typing](https://pt.wikipedia.org/wiki/Duck_typing), comum em linguagens fracamente tipadas, é como costuma-se chamar o “teste do pato” para um objeto: “Se anda como um pato, nada como um pato e grasna como um pato, então deve ser um pato”. Ou seja, não interessa se estamos falando de um pato de verdade, interessa que ele se parece com um. Traduzindo isso para programação, não nos interessa o tipo do objeto, mas sim o que o objeto consegue fazer, ou seja, se ele tem determinados métodos e propriedades. Para declarar uma interface em TypeScript, utilizamos a palavra reservada interface e podemos inserir as propriedades e declarar os métodos com uma função ou arrow function:
+```
+
+
+```js
+interface Empregado {
+    nome: string;
+    sobrenome: string;
+    nomeCompleto(): string;
+}
+```
+
+Aqui a única função da interface é descrever um **tipo**.
+
+Agora vamos implementar a interface declarando uma variável do tipo Empregado. Ela irá preencher esse contrato e passará valores às propriedades nome e sobrenome, e o método nomeCompleto precisa combinar as duas propriedades e retornar o resultado.
+
+```js
+let empregado: Empregado = {
+    nome : "Haroldo",
+    sobrenome: "Calvin",
+    nomeCompleto(): string {
+        return this.nome + " " + this.sobrenome;
+    }
+}
+
+empregado.nome = 20;  //* Error - Type 'number' is not assignable to type 'string'
+```
+
+Essa verificação garante que `20`, um dado do tipo `Number`, não será atribuído a `empregado.nome`, justamente porque está esperando uma String.
+
+O uso de interfaces é útil para validar e documentar a forma que os objetos serão passados como parâmetros e objetos retornados de funções, assim como suas propriedades. É indiscutível que essa prática irá garantir a detecção de erros mais rapidamente pois você não precisará buscá-los após o runtime da sua aplicação.
+
+## O que aprendemos?
+
+- Que chamamos de **polimorfismo** a alteração de um método de uma classe para que, na subclasse, o método tenha a mesma assinatura porém um comportamento diferente do método executado no contexto da superclasse;
+- Que existe uma série de princípios de design de código pensados para a programação orientada a objetos, que estão compilados no acrônimo SOLID.

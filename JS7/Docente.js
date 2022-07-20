@@ -10,7 +10,9 @@ class Docente extends User {
   }
 }
 
-const novoDocente = new Docente('Diogo', 'd@d.com', '2011-01-03');
-console.log(novoDocente);
-console.log(novoDocente.exibirInfos());
-console.log(novoDocente.aprovaEstudante('Juliana', 'JS'));
+// const novoDocente = new Docente('Diogo', 'd@d.com', '2011-01-03');
+// console.log(novoDocente);
+// console.log(novoDocente.exibirInfos());
+// console.log(novoDocente.aprovaEstudante('Juliana', 'JS'));
+
+export default Docente;

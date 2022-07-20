@@ -1020,3 +1020,448 @@ Você pode ver mais sobre esse assunto, com mais exemplos, na [documentação do
 - O conceito de herança de classe, também importante para se trabalhar com orientação a objetos, como criar subclasses que herdam propriedades e métodos de uma superclasse e como reaproveitar estas propriedades e métodos da superclasse através da função `super()`;
 - Como uma subclasse pode ter propriedades e métodos próprios, além dos recebidos da superclasse, e como declarar isso no código criando novos métodos;
 - A praticar a sintaxe de classe com JavaScript, criando classes, subclasses, propriedades, construtores e métodos.
+
+# 4. Encapsulamento
+
+## Atributos privados
+
+Atributos privados no Javascript é uma `feature` recente, existindo a partir da versão 13 do `Node`. Podemos sinalizar um atributo como privado usando `#` antes do nome do atributo. O fato de ser privado, evita que o atributo seja acessado externamente, seja por leitura ou escrita.
+
+A classe `User` foi alterada para ter todos seus atributos como privados, desta forma, nenhum deles poderão ser acessados externamente.
+
+```js
+class User {
+  #nome
+  #email
+  #nascimento
+  #role
+  #ativo
+
+  constructor(nome, email, nascimento, role, ativo = true) {
+    this.#nome = nome;
+    this.#email = email;
+    this.#nascimento = nascimento;
+    this.#role = role || 'estudante'
+    this.#ativo = ativo;
+  }
+
+  exibirInfos() {
+    return `${this.#nome} ${this.email}`;
+  }
+}
+```
+
+Caso alguma parâmetro seja acessado, ocorrerá um erro de sintaxe.
+```js
+  novoUser.#nome = 'Márcia'
+          ^
+
+SyntaxError: Private field '#nome' must be declared in an enclosing class
+    at ESMLoader.moduleStrategy (node:internal/modules/esm/translators:117:18)
+    at ESMLoader.moduleProvider (node:internal/modules/esm/loader:337:14)
+    at async link (node:internal/modules/esm/module_job:70:21)
+```
+
+## Métodos privados
+
+Assim como atributos, podemos definir métodos privados e analogamento aos atributos privados, os métodos privados são iniciados com `#`.
+
+Métodos privados só podem ser invocados dentro da própria classe, não podendo ser invocados externamente. A usabilidade desses métodos é encapsular lógica que só compete a própria classe, não necessitando externalizar essa lógica para o mundo exterior.
+
+```js
+class User {
+  #nome
+  #email
+  #nascimento
+  #role
+  #ativo
+
+  constructor(nome, email, nascimento, role, ativo = true) {
+    this.#nome = nome;
+    this.#email = email;
+    this.#nascimento = nascimento;
+    this.#role = role || 'estudante'
+    this.#ativo = ativo;
+  }
+
+  #montaObjUser() {
+    return ({
+      nome: this.#nome,
+      email: this.#email,
+      nascimento: this.#nascimento,
+      role: this.#role,
+      ativo: this.#ativo,
+    })
+  }
+
+  exibirInfos() {
+    return `${this.#nome} ${this.#email}`;
+  }
+
+  exibirObj() {
+    const objUser = this.#montaObjUser();
+    return `${objUser.nome} ${objUser.email} ${objUser.nascimento} ${objUser.role} ${objUser.ativo}`;
+  }
+}
+
+export default User;
+```
+
+No código acima, foi criado um método privado `montaObjUser` que é acessado apenas por outro método público, mas caso tente acessar esse método fora da classe, deve ocorrer um erro de sintaxe.
+
+```js
+console.log(novoUser.#montaObjUser());
+                    ^
+
+SyntaxError: Private field '#montaObjUser' must be declared in an enclosing class
+    at ESMLoader.moduleStrategy (node:internal/modules/esm/translators:117:18)
+    at ESMLoader.moduleProvider (node:internal/modules/esm/loader:337:14)
+    at async link (node:internal/modules/esm/module_job:70:21)
+```
+
+Temos um efeito colateral de usar atributos e métodos privados, isso afeta até mesmo as subclasses que por ventura queiram acessar esses dados privados. Do jeito atual, isso é impossível.
+
+Para possibilitar o acesso a esses dados, devemos utilizar os métodos acessores, ou `getters` e `setters`.
+
+## Getters
+
+Usamos o `getters` quando necessitamos expor algum atributo privado para o mundo externo. Antes do nome atributo que você quer expor usamos a palavra-chave `get`. O método não receberá parâmetros e na implementação do método pode ou não haver lógica, dependendo da necessidade.
+
+```js
+  get nome() {
+    return this.#nome;
+  }
+```
+
+[06:36] Você pode perguntar se precisa fazer um para cada um. Sim, precisa, esse é um padrão, e tem alguns motivos para existir esse padrão. Primeiro, são motivos de boas práticas de orientação a objeto, esse conjunto de boas práticas é conhecido como SOLID, vai ter daqui a pouco um vídeo sobre o SOLID, um material extra sobre ele, e um desses princípios de boas práticas de orientação a objetos fala justamente sobre uma coisa que chamamos de responsabilidade única.
+
+[07:09] As classes devem ser especializadas em um assunto, e as propriedades são sempre uma coisa só, mas os métodos dentro dessas classes também fazem uma coisa só. Pode parecer estranho escrevermos todos esses códigos, todos esses gets, mas se formos pensar bem, isso evita uma coisa chamada acoplamento, quando um método faz muita coisa e, por exemplo, eu quero pegar só nascimento, se o get pegasse todos os dados juntos, quando fosse querer pegar só o nascimento, eu ia precisar refatorar, não ia conseguir. Ou seja, tenho muita coisa acoplada umas nas outras.
+
+[07:47] Além disso, o acoplamento dificulta a implementação de teste, fica mais difícil testar e mais difícil reaproveitar código. Então, se um método recebe muitas coisas e faz muitas coisas, fica muito difícil dele ser reaproveitado.
+
+[08:02] Mas vamos supor que eu não quero ter nenhuma propriedade privada nessa classe. Eu ainda poderia usar os assessores? Sim, é legal usar os assessores, por exemplo o get, mesmo assim. Um dos motivos é que é bom você ter um único ponto exposto, um único ponto onde você expõe propriedades, e por esse único ponto ela pode ser acessada e também modificada, vamos ver as modificações em seguida, e o que é útil inclusive para você conseguir debugar, porque você consegue limitar os pontos de onde as propriedades estão sendo acessadas de fora da classe e de que forma isso está sendo possível.
+
+[08:41] Então, o que fizemos foi criar um acesso, uma propriedade assessora, que falamos, um getter, usando a palavra-chave get, é um tipo de função especial, que é somente leitura, ela apenas retorna uma propriedade da classe. E dessa forma, concentramos todas as propriedades que queremos expor para fora da classe dentro dos gets e elas ficam isoladas do restante do código.
+
+[09:10] Além de get, existe um outro assessor que chama set, são os setters, que podemos usar para modificar propriedades. Vamos ver em seguida.
+
+## Setters
+
+Os métodos `setters` servem para alterar alguma propriedade da classe. Estes métodos aceitam apenas um parâmetro, que é o novo valor. Como nos `getters`, dentro do método pode haver lógica para validações antes de atribuir o novo valor a um determinado atributo.
+
+```js
+set nome(value) {
+  if (!value) {
+    throw new Error('Nome inválido')
+  }
+  this.#nome = value;
+}
+```
+[09:35] Mas agora, eu pensei em uma coisa, uma vez que estamos usando setter, ainda precisamos do construtor da classe? Será que precisa? Porque o setter faz isso, chamamos um setter para definir um valor para a propriedade. Bom, precisa, porque as funções do construtor e a função do setter são coisas diferentes. O setter trabalha dentro do princípio de encapsulamento, então toda vez que definimos getters e setters, permitimos que só que o que está especificado por esses assessores esteja disponível para fora da classe.
+
+[10:14] E o setter é a única forma que existe no código de alterar um conteúdo que está dentro de uma classe. Vamos sempre pensar em casos críticos, por exemplo, alteração do nome de um cliente no banco, porque esse é um caso bem clássico de alteração crítica.
+
+[10:33] Ao contrário do construtor, quando usamos o construtor para instanciar uma classe, garantimos que todos os dados que são necessários para que o objeto que é gerado a partir da classe sejam passados. Então usamos o construtor para garantir que todos os usuários vão ter as informações necessárias quando a nova instância da classe for criada.
+
+[11:00] Ou seja, digamos que a forma de instanciar a classe, passando propriedades para dentro dela, nome, e-mail, o que for, é através do construtor. Então, quando que usamos o setter, afinal? Usamos o setter justamente para a forma que fizemos no exemplo. Em todas as ocasiões que temos que alterar a propriedade de uma classe que já está instanciada, uma classe que já está criada. Então não só fazer alterações, mas também validar essas alterações antes que elas sejam feitas.
+
+[11:33] Então, as funções assessoras, elas servem para encapsular a classe, lembrando, encapsular é esconder propriedades para que eles não sejam manipulados por fora da classe, por outras partes do código, e o código que está fora da classe nem vê que essas propriedades e métodos que não estão encapsulados, nem vê que eles existem.
+
+[11:58] Então já vimos as duas partes que são as mais essenciais do encapsulamento, que são as propriedades e métodos privados, e as segundas que são as propriedades assessoras, os getters e os setters, já vimos como eles funcionam
+
+## Atributos privados com _
+
+Até recentemente, o JavaScript não tinha a opção de usar atributos privados com `#`. Ao invés disso, atributos privados tinham um `_` como prefixo como convenção, indicando se tratar de atributos privados. Vamos ver alguns exemplos de como essa convenção funcionava.
+
+```
+Como “convenção”, podemos entender como um “acordo”; a comunidade dev adotou a sintaxe _variavel (com o _ antes do nome) como um aviso no código de que trata-se de uma propriedade ou método privado, que não deve ser chamado ou modificado fora da classe. Porém incluir o _ não produz nenhuma modificação sintática no código. Ou seja, os atributos na prática continuam se comportando como propriedade ou método normal (público) e ainda podem ser acessados livremente.
+```
+
+```
+Lembrando que: propriedades e métodos públicos são aqueles que podem ser acessados a partir de qualquer parte do código; os privados são acessados apenas “por dentro” da classe.
+```
+
+Além da convenção, existem algumas formas de fazer um atributo se comportar como privado. Vamos ver alguns exemplos, começando por uma classe totalmente pública:
+
+```js
+class User {
+ role = '';
+
+ constructor(nome) {
+   this.nome = nome;
+   console.log(`Criado novo usuário: ${nome}` );
+ }
+}
+
+// criar o usuário
+let novoUser = new User('Rodrigo');
+
+// modificar o role
+novoUser.role = 'admin';
+console.log(novoUser.role) // admin
+```
+
+Agora vamos “proteger” as propriedades `nome` e `role`, marcando com o prefixo `_` e também modificando um pouco a estrutura da classe:
+
+```js
+class User {
+ _role = '';
+
+ set role(tipoRole) {
+   if (tipoRole !== 'admin') {
+     tipoRole = 'estudante'
+   }
+   this._role = tipoRole
+ }
+
+ get role() {
+   return this._role
+ }
+
+ constructor(nome) {
+   this._nome = nome;
+ }
+}
+```
+Ao criarmos a classe, condicionamos o acesso aos getters e setters. Ao criarmos a instância e executarmos os métodos:
+
+```js
+// criar o usuário
+let novoUser = new User('Rodrigo');
+
+// modificar o role
+novoUser.role = 'admin'; // acessando via setter
+console.log(novoUser.role) // admin
+
+// tentar incluir um role não existente
+novoUser.role = 'gerente';
+console.log(novoUser.role) // estudante
+```
+
+### Propriedades do tipo “apenas leitura” (read-only)
+
+A partir do momento em que usamos getters ou setters em uma classe, as operações ficam dependentes entre si. Ou seja, uma classe que utiliza getters para acessar propriedades vai precisar necessariamente de setters para modificá-las. Por exemplo:
+
+```js
+class User {
+  constructor(nome) {
+   this._nome = nome
+ }
+
+ get nome(){
+   return this._nome
+ }
+}
+```
+Acima, criamos uma classe com apenas um construtor para receber um valor para a propriedade `nome` e um getter para `nome`.
+
+Vamos instanciar a classe e tentar atualizar `nome`:
+
+```js
+// criar o usuário
+let novoUser = new User('Rodrigo');
+console.log(novoUser.nome) //usando o getter
+
+novoUser.nome = 'Mariana'
+console.log(novoUser.nome) //não é modificado, continua 'Rodrigo'
+```
+O setter não foi implementado, então a propriedade não é modificada.
+
+Usando métodos
+É possível emular os getters e setters com funções. As funções são mais flexíveis do que `get`/`set` (podem aceitar argumentos diferentes, por exemplo).
+
+```js
+class User {
+ _nome = '';
+
+ setNome(nome) {
+   this._nome = nome;
+ }
+
+ getNome() {
+   return this._nome;
+ }
+}
+```
+
+Nesse caso, suprimimos o construtor e passamos toda a responsabilidade para `setName()`. Vamos executar:
+
+```js
+const novoUser = new User()
+novoUser.setNome('Rodrigo');
+console.log(novoUser.getNome()); //Rodrigo
+```
+
+A convenção do prefixo `_` para atributos privados têm sido usada há muito tempo e, apesar da funcionalidade de atributos privados com `#` já ter sido implementada, você ainda pode encontrar a forma anterior com frequência.
+
+## Outro exemplo de setter
+
+Vamos fazer mais um exercício com setters.
+
+Podemos supor que, na classe `User`, seja necessário separar as propriedades de nome e sobrenome dos usuários, pois a base de dados guarda cada uma dessas informações em campos separados. Porém, em todas as comunicações que levam o nome do usuário, nome e sobrenome devem aparecer juntos.
+
+Uma forma de resolver isso seria através do setter de nome. Vamos alterar um pouco a classe `User` para receber, no construtor, `#nome` e `#sobrenome`:
+
+```js
+default class User {
+ #nome
+ #sobrenome
+ // restante das propriedades
+```
+
+E alteramos também no construtor:
+
+```js
+constructor (nome, sobrenome, email, nascimento, role, ativo = true) {
+  this.#nome = nome
+  this.#sobrenome = sobrenome
+  // restante das propriedades
+```
+
+A questão agora é que nome e sobrenome devem ser unidos no getter (para serem “mandados” para fora da classe como um único dado) e separados no setter, pois o método sempre receberá um nome completo e `#nome` e `#sobrenome` são propriedades diferentes que estão salvas no banco em campos separados.
+
+Começando pelo setter:
+
+```js
+set nome(novoNome) {
+  if (novoNome === '') {
+    throw new Error('formato não válido')
+  }
+  let [nome, ...sobrenome] = novoNome.split(" ")
+  sobrenome = sobrenome.join(' ')
+  this.#nome = nome
+  this.#sobrenome = sobrenome
+}
+```
+
+Aqui pegamos uma string única e separamos em nome e sobrenome, para que cada propriedade possa ser atualizada. Fizemos isso utilizando os métodos do JavaScript `split()` e `join` para manipular strings e arrays.
+
+Atualizamos agora os getters:
+
+```js
+get nome() {
+  return this.#nome
+}
+
+get sobrenome() {
+  return this.#sobrenome
+}
+```
+
+Testando no console:
+
+```js
+const novoUser = new User('Juliana', 'Souza', 'j@j.com', '2021-01-01')
+console.log(novoUser.nome) //'Juliana'
+novoUser.nome = 'Juliana Silva Souza'
+console.log(novoUser.nome) //'Juliana'
+console.log(novoUser.sobrenome) //'Silva Souza'
+```
+
+Por fim, podemos juntar as duas propriedades para retornar o nome completo:
+
+```js
+get nome() {
+   return `${this.#nome} ${this.#sobrenome}`
+}
+```
+
+Vamos esclarecer aqui que os métodos de string do JavaScript servem para este exemplo, mas caso precise separar nomes de uma forma mais segura é sempre possível usar [expressões regulares](https://cursos.alura.com.br/course/expressoes-regulares).
+
+Esta situação de nomes e sobrenomes é somente um exemplo de manipulação de propriedades e/ou validações que podem fazer parte do código das propriedades assessors.
+
+## Assessors são sempre necessários?
+
+Durante a aula conhecemos os chamados assessors, ou métodos que dão acesso a determinadas propriedades. Os getters retornam valores e os setters definem valores. Mas será que estes métodos são sempre necessários, em todas as classes?
+
+Assim como a função constructor(), os assessors podem ser utilizados somente quando as funcionalidades são realmente necessárias. Por exemplo, um getter pode ser utilizado para retornar um dado da classe de uma forma específica (juntando nome e sobrenome como vimos durante a aula, ou qualquer outro caso). Um setter é útil quando se deseja executar algum código sempre que alguma propriedade é definida ou sofre alguma modificação - por exemplo, códigos que façam validação de campos. Os assessors também atuam na segurança de uma classe, encapsulando dados quando necessário.
+
+Durante a prática do desenvolvimento com classes, você terá a oportunidade de praticar cada caso e também ver situações onde os assessors não são necessários, ou o constructor(). Como dizemos para quase tudo em programação, “depende”!
+
+## Getters e setters com funções
+
+Na atividade anterior sobre atributos privados vimos um exemplo de código onde, ao invés de `get` e `set`, foram utilizadas funções para esse papel:
+
+```js
+class User {
+  _nome = '';
+
+  setNome(nome) {
+    this._nome = nome;
+  }
+
+  getNome() {
+    return this._nome;
+  }
+}
+```
+É possível usar métodos como assessors, como visto acima. Porém, há algumas vantagens na utilização de `get`/`set`:
+
+Apesar de serem métodos, a sintaxe para uso do `get` e `set` é a mesma que utiilizamos para acessar/modificar propriedades públicas normalmente, o que faz sentido com a ideia do encapsulamento de “expôr” somente o que é necessário da classe. Por outro lado, na forma acima, os métodos são acessados com a sintaxe usual de execução de função (usando parênteses).
+
+Por exemplo, usando funções como assessors teríamos as seguintes chamadas de método:
+
+```js
+const nome = novoUser.getNome() //getter
+novoUser.setNome('Pedro') //setter
+novoUser.exibeInfos() // método normal
+```
+
+Utilizando `get` e `set`:
+
+```js
+const nome = novoUser.nome //getter
+novoUser.nome = 'Pedro' //setter
+novoUser.exibeInfos() // método normal
+```
+
+Dessa forma, o uso de `get`/`set` ajuda na legibilidade.
+
+Além disso, os assessor têm, em si mesmos, limitações quanto aos parâmetros aceitos: `get` não aceita nenhum parâmetro e `set` apenas um parâmetro (referente ao dado que será definido), o que ajuda a garantir que não irão receber parâmetros “inesperados” que podem causar bugs. O mesmo comportamento pode ser implementado em métodos normais, por meio de validações, porém isso torna o desenvolvimento menos ágil.
+
+Na verdade (como em vários outros aspectos do desenvolvimento com JavaScript) não há consenso quanto ao uso de métodos normais no lugar de assessors e você vai encontrar as mais diversas opiniões sobre esse assunto. Como há outras linguagens de programação que não têm assessors e utilizam funções como getters/setters, pessoas que já desenvolvem nestas linguagens podem transferir sua experiência para o JavaScript. Porém, agora que você já conhece os dois casos, já fica mais fácil identificar e ler códigos que implementam o encapsulamento das duas formas.
+
+## Propriedades públicas e privadas
+
+Você está trabalhando em um sistema de gerenciamento de usuários e pediu a um colega que implementasse uma classe para o usuário padrão. Como todo cadastro de usuários sempre envolve dados sensíveis, a especificação da classe pede que as propriedades sejam privadas.
+
+Um tempo depois, você recebe o seguinte código:
+
+```js
+class User {
+  #nome
+  #email
+  #cpf
+  constructor(nome, email, cpf) {
+    this.#nome = nome
+    this.#email = email
+    this.#cpf = cpf
+  }
+
+  get nome() {
+    return this.nome
+  }
+}
+```
+Você tem a impressão de que seu colega se distraiu na implementação, mas resolve testar e conferir.
+
+Se executarmos o código abaixo para testar a classe:
+
+```js
+const novoUser = new User('Carol', 'c@c.com', '12312312312')
+console.log(novoUser.nome)
+```
+
+Qual será o resultado?
+
+```
+O terminal exibirá um erro do tipo RangeError: Maximum call stack size exceeded.
+```
+
+Alternativa correta! Você notou que o get retorna não a propriedade #nome, mas sim nome. Embora sejam consideradas como variáveis diferentes pelo JavaScript, esse código irá resultar em um stack overflow, pois a propriedade nome sendo chamada dentro do getter get nome() (ambas com a mesma nomenclatura) faz com que o getter seja chamado dentro dele mesmo, de forma recursiva, causando o “estouro” na pilha de processos do NodeJS.
+
+O que aprendemos?
+
+- O conceito de encapsulamento, que é a ação (ou ações) de “esconder” atributos de uma classe, para evitar acesso indevido a atributos importantes ou dados sensíveis, ou que métodos sejam utilizados de forma errada;
+- Como utilizar a sintaxe de atributos privados do JavaScript, através do prefixo `#`, para que a própria linguagem de programação faça a “segurança” da classe, impedindo o acesso externo a propriedades e métodos assinalados como privados com este prefixo;
+- A criar métodos assessors para “expôr” e permitir acesso e modificação de propriedades de forma controlada e restrita, através do uso das funções `get` para retornar dados específicos e `set` para definir dados específicos.
